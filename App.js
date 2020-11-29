@@ -9,6 +9,10 @@ import {
   TouchableOpacity
   
 } from 'react-native';
+import Snackbar from 'react-native-snackbar';
+
+
+
 
 const currencyPerRupee = {
   DOLLAR: 0.014,
@@ -23,37 +27,58 @@ const currencyPerRupee = {
 }
 
 const App = () => {
-  const [inputValue, setInput] = useState(0);
+  const [inputValue, setInputValue] = useState(0);
   const [resultValue, setResultValue] = useState(0);
+
+  const buttonPressed = (currency) => {
+    if (!inputValue) {
+      return Snackbar.show({
+        text: 'Enter a number!',
+        textColor: "#FFFFFF",
+        backgroundColor: "#EA7773",
+        duration: Snackbar.LENGTH_INDEFINITE,
+      });
+    }
+
+    let result = parseFloat(inputValue) * currencyPerRupee[currency]
+    setResultValue(result.toFixed(2));
+    //setInputValue(0);
+  }
 
 
   return (
     <>
-    <ScrollView backgroundColor= "#1b262c">
+    <ScrollView backgroundColor= "#1b262c" 
+    //keyboardDismissMode="interactive"
+    keyboardShouldPersistTaps="handled"
+    >
       <SafeAreaView style = {styles.container}>
 
         <View style = {styles.resultContainer}>
           <Text style = {styles.resultValue}>
-            12.23
+            {resultValue}
           </Text>
         </View>
 
-        <View style = {styles.inputContainer}>
-          <TextInput 
-          style={styles.input}
-          keyboardType= "numeric"
-          placeholder= "Enter Vlaue"
-          placeholderTextColor= "#c1c1c1"
-          
-          >
-
-          </TextInput>
-        </View>
+        <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              placeholder="Enter Value"
+              placeholderTextColor="#c1c1c1"
+              value={(inputValue).toString()}
+              onChangeText={(inputValue) =>
+                setInputValue(inputValue)
+              }></TextInput>
+          </View>
 
         <View style={styles.convertButtonContainer}>
           {Object.keys(currencyPerRupee).map((currency)=>(
-            <TouchableOpacity>
-              <Text style={styles.temp}>{currency}</Text>
+            <TouchableOpacity 
+            onPress={()=>buttonPressed(currency)}
+            key={currency} style={styles.convertButton}
+            >
+              <Text style={styles.convertButtonText}>{currency}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -74,7 +99,7 @@ const styles = StyleSheet.create({
   },
   resultContainer: 
   {
-    height: 70,
+    height: 70, 
     marginTop: 80,
     justifyContent: "center",
     borderColor: "#bbe1fa",
@@ -108,8 +133,19 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     marginTop: 10
   },
-  temp: {
+  convertButtonText: {
     color: "#FFF"
-  }
+  },
+convertButton:{
+    alignItems: "center",
+    justifyContent: "center",
+    height: 100,
+    width: "33.3%",
+    borderColor: "#bbe1fa",
+    borderWidth: 2,
+    marginTop: 10,
+    backgroundColor: "#0f4c75",
+    
+  }  
   
 })
